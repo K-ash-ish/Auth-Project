@@ -100,11 +100,16 @@ app.get("/logout", function (req, res) {
   });
 });
 app.get("/secrets", function (req, res) {
-  if (req.isAuthenticated()) {
-    res.render("secrets");
-  } else {
-    res.redirect("/login");
-  }
+  User.find({"secret": {$ne:null}}, function(err, found){
+    if(!err){
+      if(found){
+        res.render('secrets', {usersWithSecret: found})
+      }
+    }
+    else{
+      console.log(err);
+    }
+  });
 });
 app.get("/submit", function (req, res) {
   if (req.isAuthenticated()) {
@@ -167,8 +172,7 @@ app.post('/submit', function(req, res){
       console.log(err);
     }
   })
-  console.log(req.user);
-})
+});
 
 app.listen(port, function (req, res) {
   console.log("Server Running ");
